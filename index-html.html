@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MintySynth Web</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f5f5f5;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #root {
+      height: 100%;
+    }
+    
+    /* Prevent touch actions from being interpreted as scrolls */
+    * {
+      touch-action: manipulation;
+    }
+    
+    /* Hide scrollbars but allow scrolling */
+    ::-webkit-scrollbar {
+      width: 0px;
+      background: transparent;
+    }
+    
+    /* Optimize for mobile */
+    @media (max-width: 768px) {
+      .slider {
+        height: 44px; /* Larger touch target for mobile */
+      }
+      button {
+        min-height: 44px; /* Larger touch target for mobile */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <!-- Load React and React DOM dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+  
+  <!-- Load Babel to transpile JSX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+  
+  <!-- Load the Tone.js library for audio synthesis -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  
+  <!-- Main App script -->
+  <script type="text/babel" src="app.js"></script>
+  
+  <!-- Service Worker Registration for PWA capabilities -->
+  <script>
+    // Check if service workers are supported
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+    
+    // Prevent pinch zoom
+    document.addEventListener('touchmove', function (event) {
+      if (event.scale !== 1) {
+        event.preventDefault();
+      }
+    }, { passive: false });
+    
+    // Initialize audio on first user interaction
+    document.addEventListener('click', function initAudio() {
+      // Create and start audio context
+      if (window.Tone) {
+        Tone.start();
+        console.log('Audio context started');
+        document.removeEventListener('click', initAudio);
+      }
+    });
+  </script>
+</body>
+</html>
